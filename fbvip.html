@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FB Checker</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:     #070a0e;
+  --panel:  #0d1117;
+  --border: #1e2d40;
+  --acc:    #1877f2;
+  --green:  #00e676;
+  --red:    #ff1744;
+  --yellow: #ffd600;
+  --cyan:   #00d4ff;
+  --text:   #c9d1d9;
+  --dim:    #4a5568;
+  --glow:   0 0 14px rgba(24,119,242,.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 14px 80px;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -5%, rgba(24,119,242,.13) 0%, transparent 65%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,45,64,.15) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,45,64,.08) 40px);
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  margin-bottom: 24px;
+  animation: fadeDown .45s ease both;
+}
+.logo-row {
+  display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4px;
+}
+.logo-icon {
+  width: 40px; height: 40px; background: var(--acc); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; box-shadow: var(--glow);
+}
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: .08em; color: #fff; }
+h1 span { color: var(--acc); }
+.sub { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--dim); letter-spacing: .14em; }
+
+/* ── SERVER BAR ── */
+.srv-bar {
+  width: 100%; max-width: 640px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 9px 16px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Share Tech Mono', monospace; font-size: .73rem;
+  animation: fadeDown .45s ease .08s both;
+}
+.srv-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); flex-shrink: 0; transition: background .3s; }
+.srv-dot.ok  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.srv-dot.err { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+.srv-txt { flex: 1; color: var(--dim); }
+.srv-txt.ok  { color: var(--green); }
+.srv-txt.err { color: var(--red); }
+.btn-ping {
+  background: none; border: 1px solid var(--border); border-radius: 5px;
+  color: var(--dim); padding: 3px 10px; font-size: .7rem; cursor: pointer;
+  font-family: 'Share Tech Mono', monospace; transition: all .2s;
+}
+.btn-ping:hover { border-color: var(--acc); color: var(--acc); }
+
+/* server url input */
+.srv-url-wrap {
+  width: 100%; max-width: 640px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 10px;
+  animation: fadeDown .45s ease .04s both;
+}
+.srv-url-label {
+  font-family: 'Share Tech Mono', monospace; font-size: .65rem; letter-spacing: .16em;
+  color: var(--acc); margin-bottom: 8px;
+}
+.srv-url-row { display: flex; gap: 8px; align-items: center; }
+.srv-url-row input {
+  flex: 1; background: #060810; border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: .8rem;
+  padding: 7px 11px; outline: none; transition: border-color .2s;
+}
+.srv-url-row input:focus { border-color: var(--acc); }
+
+/* ── CARD ── */
+.card {
+  width: 100%; max-width: 640px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+  padding: 22px 20px 20px;
+  box-shadow: 0 10px 50px rgba(0,0,0,.65);
+  animation: fadeUp .45s ease .1s both;
+}
+
+.sec-label {
+  font-family: 'Share Tech Mono', monospace; font-size: .67rem; letter-spacing: .18em;
+  color: var(--acc); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.sec-label::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 6px var(--green); flex-shrink: 0;
+}
+
+textarea {
+  width: 100%; min-height: 96px;
+  background: #060810; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: .82rem;
+  padding: 10px 13px; resize: vertical; outline: none; line-height: 1.65;
+  transition: border-color .2s, box-shadow .2s;
+}
+textarea:focus { border-color: var(--acc); box-shadow: var(--glow); }
+textarea::placeholder { color: var(--dim); }
+.hint { font-size: .7rem; color: var(--dim); margin-top: 5px; font-family: 'Share Tech Mono', monospace; }
+
+/* opts */
+.opts { display: flex; align-items: center; gap: 20px; margin: 14px 0 16px; flex-wrap: wrap; }
+.toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; font-size: .87rem; font-weight: 600; }
+.toggle input { display: none; }
+.toggle-track { width: 36px; height: 19px; background: var(--border); border-radius: 20px; position: relative; transition: background .2s; }
+.toggle input:checked ~ .toggle-track { background: var(--acc); box-shadow: var(--glow); }
+.toggle-thumb { width: 13px; height: 13px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left .2s; }
+.toggle input:checked ~ .toggle-track .toggle-thumb { left: 20px; }
+
+/* run btn */
+.btn-run {
+  width: 100%; padding: 13px; background: var(--acc); border: none; border-radius: 8px;
+  color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: .1em; cursor: pointer; position: relative; overflow: hidden;
+  transition: opacity .2s, transform .1s;
+}
+.btn-run:hover { opacity: .88; }
+.btn-run:active { transform: scale(.98); }
+.btn-run:disabled { opacity: .35; cursor: not-allowed; }
+.ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,.22); transform: scale(0); animation: ripple .5s linear; pointer-events: none; }
+
+/* progress */
+.prog-wrap { margin-top: 16px; display: none; }
+.prog-wrap.show { display: block; }
+.prog-bg { height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.prog-fill { height: 100%; background: var(--acc); border-radius: 3px; width: 0%; transition: width .3s ease; box-shadow: var(--glow); }
+.prog-text { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--dim); }
+
+/* results */
+.res-wrap { margin-top: 18px; display: none; }
+.res-wrap.show { display: block; }
+.res-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.res-count { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--dim); }
+.btn-row { display: flex; gap: 7px; }
+.btn-copy-all, .btn-clear {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: .77rem; font-weight: 600;
+  padding: 4px 11px; cursor: pointer; transition: all .2s; letter-spacing: .04em;
+}
+.btn-copy-all:hover { border-color: var(--acc); color: var(--acc); }
+.btn-clear:hover    { border-color: var(--red); color: var(--red); }
+
+#result-list { display: flex; flex-direction: column; gap: 6px; max-height: 500px; overflow-y: auto; padding-right: 3px; }
+#result-list::-webkit-scrollbar { width: 3px; }
+#result-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* result item */
+.ri {
+  background: #060810; border: 1px solid var(--border); border-left: 3px solid var(--dim);
+  border-radius: 9px; padding: 9px 12px; display: flex; align-items: center; gap: 9px;
+  animation: fadeUp .2s ease both; transition: border-left-color .2s;
+  cursor: pointer;
+}
+.ri:hover { border-left-color: var(--acc); }
+.ri.live     { border-left-color: var(--green); }
+.ri.die      { border-left-color: var(--red); }
+.ri.uid-only { border-left-color: var(--yellow); }
+.ri.error    { border-left-color: var(--dim); opacity: .55; }
+.ri.loading  { border-left-color: var(--acc); }
+
+.badge {
+  font-family: 'Share Tech Mono', monospace; font-size: .6rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0; letter-spacing: .07em;
+}
+.badge.live { background: rgba(0,230,118,.14); color: var(--green); border: 1px solid var(--green); }
+.badge.die  { background: rgba(255,23,68,.14);  color: var(--red);   border: 1px solid var(--red); }
+.badge.uid  { background: rgba(255,214,0,.12);  color: var(--yellow);border: 1px solid var(--yellow); }
+.badge.err  { background: rgba(74,85,104,.2);   color: var(--dim);   border: 1px solid var(--dim); }
+.badge.pend { background: rgba(24,119,242,.12); color: var(--acc);   border: 1px solid var(--acc); }
+
+.ri-info { flex: 1; min-width: 0; }
+.ri-uid  { font-family: 'Share Tech Mono', monospace; font-size: .88rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ri-inp  { font-size: .68rem; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.ri-name { font-size: .74rem; color: var(--green); margin-top: 1px; font-family: 'Share Tech Mono', monospace; }
+
+.ri-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.btn-sm {
+  background: none; border: 1px solid var(--border); border-radius: 5px;
+  color: var(--dim); padding: 3px 8px; font-size: .68rem; cursor: pointer;
+  font-family: 'Share Tech Mono', monospace; transition: all .2s;
+}
+.btn-sm:hover { border-color: var(--acc); color: var(--acc); }
+.btn-sm.copied { border-color: var(--green); color: var(--green); }
+.btn-sm.info-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* stats */
+.stats-bar {
+  display: flex; gap: 16px; margin-top: 12px; padding: 9px 13px;
+  background: #060810; border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap;
+}
+.stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.stat-val { font-family: 'Share Tech Mono', monospace; font-size: 1.05rem; font-weight: 700; }
+.stat-val.blue   { color: var(--acc); }
+.stat-val.yellow { color: var(--yellow); }
+.stat-val.green  { color: var(--green); }
+.stat-val.red    { color: var(--red); }
+.stat-lbl { font-size: .63rem; color: var(--dim); letter-spacing: .09em; }
+
+/* ── DETAIL PANEL ── */
+.detail-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(5, 8, 14, .88);
+  backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+  padding: 16px;
+  animation: fadeIn .2s ease;
+}
+.detail-overlay.show { display: flex; }
+
+.detail-panel {
+  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+  padding: 24px 22px 28px;
+  box-shadow: 0 20px 80px rgba(0,0,0,.8);
+  animation: scaleIn .25s ease both;
+  position: relative;
+}
+.detail-panel::-webkit-scrollbar { width: 3px; }
+.detail-panel::-webkit-scrollbar-thumb { background: var(--border); }
+
+.dp-close {
+  position: absolute; top: 14px; right: 14px;
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--dim); width: 28px; height: 28px; cursor: pointer;
+  font-size: .9rem; display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.dp-close:hover { border-color: var(--red); color: var(--red); }
+
+.dp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.dp-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 2px solid var(--acc); overflow: hidden; flex-shrink: 0;
+  background: var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.dp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.dp-name { font-size: 1.25rem; font-weight: 700; color: #fff; }
+.dp-uid  { font-family: 'Share Tech Mono', monospace; font-size: .75rem; color: var(--dim); margin-top: 2px; }
+.dp-verified { display: inline-block; background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3); color: var(--cyan); border-radius: 5px; padding: 2px 8px; font-size: .65rem; font-weight: 700; letter-spacing: 1px; margin-top: 4px; }
+
+.dp-link {
+  display: block; background: rgba(24,119,242,.07); border: 1px solid rgba(24,119,242,.22);
+  border-radius: 9px; padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace; font-size: .78rem; color: var(--cyan);
+  text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  margin-bottom: 16px; transition: border-color .2s;
+}
+.dp-link:hover { border-color: var(--cyan); }
+
+.dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 12px; }
+@media(max-width:460px) { .dp-grid { grid-template-columns: 1fr; } }
+
+.dp-card {
+  background: #060810; border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; transition: border-color .2s;
+}
+.dp-card:hover { border-color: #2a3a50; }
+.dp-card.wide { grid-column: 1/-1; }
+.dp-clabel { font-size: .65rem; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--dim); margin-bottom: 5px; }
+.dp-cval { font-size: .88rem; font-weight: 700; color: var(--text); font-family: 'Share Tech Mono', monospace; word-break: break-all; }
+.dp-cval.private { color: var(--dim); font-style: italic; font-weight: 400; }
+.dp-cval.blue { color: var(--cyan); }
+
+.dp-work-title { font-size: .65rem; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+.dp-work-item { padding: 9px 0; border-bottom: 1px solid var(--border); }
+.dp-work-item:last-child { border-bottom: none; padding-bottom: 0; }
+.dp-work-emp { font-weight: 700; font-size: .9rem; }
+.dp-work-det { font-size: .75rem; color: var(--dim); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
+
+.dp-loading { text-align: center; padding: 32px; font-family: 'Share Tech Mono', monospace; font-size: .8rem; color: var(--dim); }
+
+/* spinners */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.2); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 5px; }
+.spinner-lg { width: 28px; height: 28px; border: 3px solid rgba(24,119,242,.2); border-top-color: var(--acc); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: none; } }
+@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn  { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes ripple   { to { transform: scale(4); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <div class="logo-icon">🔍</div>
+    <h1>FB <span>Checker</span></h1>
+  </div>
+  <p class="sub">RESOLVE · LIVE/DIE · INFO · TERMUX BACKEND</p>
+</header>
+
+<!-- Server URL input -->
+<div class="srv-url-wrap" id="srv-url-wrap">
+  <div class="srv-url-label">🔗 SERVER URL</div>
+  <div class="srv-url-row">
+    <input type="text" id="srv-url-inp"
+      placeholder="https://xxxx.lhr.life  hoặc  http://localhost:9999"
+      value="http://localhost:9999"
+      spellcheck="false" autocomplete="off"/>
+    <button class="btn-ping" onclick="applySrvUrl()">Kết nối</button>
+  </div>
+  <p class="hint" style="margin-top:5px">// localhost.run · ngrok · hoặc IP LAN</p>
+</div>
+
+<!-- Server status -->
+<div class="srv-bar" id="srv-bar">
+  <div class="srv-dot" id="srv-dot"></div>
+  <div class="srv-txt" id="srv-txt">Nhập URL server rồi bấm Kết nối</div>
+  <button class="btn-ping" onclick="pingServer()">Ping</button>
+</div>
+
+<!-- Main card -->
+<div class="card">
+  <div class="sec-label">NHẬP LINK / USERNAME / UID</div>
+  <textarea id="inp" placeholder="https://m.facebook.com/vtvshows/&#10;100005390464078&#10;zuckerberg&#10;&#10;Mỗi dòng 1 mục..."></textarea>
+  <p class="hint">// profile · fanpage · group · people/name/UID · profile.php?id= · groups/.../user/UID</p>
+
+  <div class="opts">
+    <label class="toggle">
+      <input type="checkbox" id="chk-live" checked/>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      Kiểm tra LIVE/DIE
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="chk-parallel"/>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      Song song (×3)
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="chk-autoinfo"/>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      Tự động lấy INFO
+    </label>
+  </div>
+
+  <button class="btn-run" id="btn-run" onclick="runCheck(this)">▶ &nbsp;CHẠY KIỂM TRA</button>
+
+  <div class="prog-wrap" id="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-text" id="prog-text">Đang xử lý...</div>
+  </div>
+
+  <div class="res-wrap" id="res-wrap">
+    <div class="res-hdr">
+      <div class="res-count" id="res-count"></div>
+      <div class="btn-row">
+        <button class="btn-copy-all" onclick="copyAll()">Copy UID</button>
+        <button class="btn-clear" onclick="clearResults()">Xoá</button>
+      </div>
+    </div>
+    <div id="result-list"></div>
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-val blue"   id="s-total">0</span><span class="stat-lbl">TOTAL</span></div>
+      <div class="stat"><span class="stat-val yellow"  id="s-uid">0</span><span class="stat-lbl">UID OK</span></div>
+      <div class="stat"><span class="stat-val green"   id="s-live">0</span><span class="stat-lbl">LIVE</span></div>
+      <div class="stat"><span class="stat-val red"     id="s-die">0</span><span class="stat-lbl">DIE</span></div>
+      <div class="stat"><span class="stat-val"         id="s-err" style="color:var(--dim)">0</span><span class="stat-lbl">ERR</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail overlay -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detail-panel">
+    <button class="dp-close" onclick="closeDetailBtn()">✕</button>
+    <div id="dp-content"><div class="dp-loading"><div class="spinner-lg"></div>Đang tải thông tin...</div></div>
+  </div>
+</div>
+
+<script>
+const API_KEY  = 'dungkon_w99fq';
+const PROXY    = 'https://corsproxy.io/?url=';
+let results    = [], running = false, abortCtl = null;
+
+function getAPI() {
+  return (document.getElementById('srv-url-inp').value || 'http://localhost:9999').replace(/\/$/, '');
+}
+
+function applySrvUrl() {
+  pingServer();
+}
+
+/* ── SERVER PING ── */
+async function pingServer() {
+  const dot = document.getElementById('srv-dot');
+  const txt = document.getElementById('srv-txt');
+  dot.className = 'srv-dot'; txt.className = 'srv-txt';
+  txt.textContent = 'Đang kết nối...';
+  try {
+    const r = await fetch(`${getAPI()}/ping`, { signal: AbortSignal.timeout(5000) });
+    const j = await r.json();
+    if (j.ok) {
+      dot.className = 'srv-dot ok'; txt.className = 'srv-txt ok';
+      txt.textContent = '✓ Đã kết nối: ' + getAPI();
+      document.getElementById('btn-run').disabled = false;
+      return true;
+    }
+  } catch {}
+  dot.className = 'srv-dot err'; txt.className = 'srv-txt err';
+  txt.textContent = '✗ Server chưa chạy! Mở Termux → python server.py';
+  document.getElementById('btn-run').disabled = true;
+  return false;
+}
+
+/* ── API CALLS ── */
+async function apiCheck(input, doLive) {
+  const r = await fetch(`${getAPI()}/check`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input, live: doLive }),
+    signal: AbortSignal.timeout(15000),
+  });
+  return r.json();
+}
+
+async function proxyFetch(url) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (r.ok) return r.json(); throw 0;
+  } catch {
+    const r2 = await fetch(PROXY + encodeURIComponent(url), { signal: AbortSignal.timeout(12000) });
+    return r2.json();
+  }
+}
+
+async function fetchInfo(uid) {
+  try { return await proxyFetch(`https://dungkon.lol/facebook/getinfo?uid=${uid}&apikey=${API_KEY}`); }
+  catch { return {}; }
+}
+
+/* ── STATS ── */
+function updateStats() {
+  const uid  = results.filter(r => r.uid && !r.error).length;
+  const live = results.filter(r => r.status === 'live').length;
+  const die  = results.filter(r => r.status === 'die').length;
+  const err  = results.filter(r => r.error).length;
+  document.getElementById('s-total').textContent = results.length;
+  document.getElementById('s-uid').textContent   = uid;
+  document.getElementById('s-live').textContent  = live;
+  document.getElementById('s-die').textContent   = die;
+  document.getElementById('s-err').textContent   = err;
+  document.getElementById('res-count').textContent =
+    `${results.length} mục · ${uid} UID · ${live} LIVE · ${die} DIE`;
+}
+
+/* ── RENDER ITEM ── */
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderItem(r, idx) {
+  let el = document.getElementById('ri-' + idx);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'ri-' + idx;
+    document.getElementById('result-list').appendChild(el);
+  }
+
+  let cls = '', badgeCls = 'pend', badgeTxt = 'WAIT';
+  if (r.resolving)            { badgeCls='pend'; badgeTxt='...';  cls='loading'; }
+  else if (r.error)           { badgeCls='err';  badgeTxt='ERR';  cls='error'; }
+  else if (r.status==='live') { badgeCls='live'; badgeTxt='LIVE'; cls='live'; }
+  else if (r.status==='die')  { badgeCls='die';  badgeTxt='DIE';  cls='die'; }
+  else if (r.uid)             { badgeCls='uid';  badgeTxt='UID';  cls='uid-only'; }
+
+  const canInfo = r.uid && !r.error;
+
+  el.className = 'ri ' + cls;
+  el.innerHTML = `
+    <span class="badge ${badgeCls}">${badgeTxt}</span>
+    <div class="ri-info">
+      <div class="ri-uid">${r.uid ? r.uid : (r.error ? 'Không tìm được UID' : '⏳ Đang xử lý...')}</div>
+      <div class="ri-inp">${esc(r.input)}</div>
+      ${r.name ? `<div class="ri-name">▸ ${esc(r.name)}</div>` : ''}
+    </div>
+    <div class="ri-actions">
+      ${canInfo ? `<button class="btn-sm info-btn" onclick="openDetail('${r.uid}', event)">info</button>` : ''}
+      ${r.uid   ? `<button class="btn-sm" id="cp-${idx}" onclick="copyUid(this,'${r.uid}')">copy</button>` : ''}
+    </div>
+  `;
+}
+
+/* ── MAIN CHECK ── */
+async function runCheck(btn) {
+  if (running) { abortCtl?.abort(); return; }
+  const ok = await pingServer();
+  if (!ok) return;
+
+  const lines = document.getElementById('inp').value
+    .split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) { alert('Nhập ít nhất 1 mục!'); return; }
+
+  const doLive     = document.getElementById('chk-live').checked;
+  const doParallel = document.getElementById('chk-parallel').checked;
+  const doAutoInfo = document.getElementById('chk-autoinfo').checked;
+
+  running = true; abortCtl = new AbortController();
+  results = [];
+  document.getElementById('result-list').innerHTML = '';
+  document.getElementById('res-wrap').classList.add('show');
+  document.getElementById('prog-wrap').classList.add('show');
+  btn.innerHTML = '<span class="spinner"></span> ĐANG CHẠY — Click để dừng';
+  btn.style.background = '#c0392b';
+
+  const setProgress = (done, total, msg) => {
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-text').textContent = msg || `${done}/${total} · ${pct}%`;
+  };
+
+  lines.forEach((inp, i) => {
+    results[i] = { input: inp, uid: null, status: null, name: null, error: false, resolving: true };
+    renderItem(results[i], i);
+  });
+  updateStats();
+
+  const process = async (inp, i) => {
+    if (abortCtl.signal.aborted) return;
+    try {
+      const data = await apiCheck(inp, doLive);
+      results[i] = {
+        input: inp,
+        uid:   data.uid || null,
+        status: data.live === true ? 'live' : data.live === false ? 'die' : (data.uid ? 'uid-only' : null),
+        name:  data.name || null,
+        error: data.error || !data.uid,
+        resolving: false,
+      };
+
+      // Auto-fetch info nếu bật
+      if (doAutoInfo && results[i].uid && !results[i].error) {
+        const info = await fetchInfo(results[i].uid);
+        if (info && info.name) results[i].name = info.name;
+        results[i].infoCache = info;
+      }
+    } catch {
+      results[i] = { input: inp, uid: null, status: null, name: null, error: true, resolving: false };
+    }
+    renderItem(results[i], i);
+    updateStats();
+  };
+
+  if (doParallel) {
+    const CHUNK = 3;
+    for (let i = 0; i < lines.length; i += CHUNK) {
+      if (abortCtl.signal.aborted) break;
+      await Promise.all(lines.slice(i, i + CHUNK).map((_, j) => process(lines[i+j], i+j)));
+      setProgress(Math.min(i + CHUNK, lines.length), lines.length);
+    }
+  } else {
+    for (let i = 0; i < lines.length; i++) {
+      if (abortCtl.signal.aborted) break;
+      setProgress(i, lines.length, `Đang xử lý ${i+1}/${lines.length}: ${lines[i].slice(0,40)}`);
+      await process(lines[i], i);
+      setProgress(i+1, lines.length);
+    }
+  }
+
+  running = false;
+  btn.innerHTML = '▶ &nbsp;CHẠY LẠI';
+  btn.style.background = '';
+  document.getElementById('prog-text').textContent = `✓ Hoàn tất ${lines.length} mục`;
+}
+
+/* ── COPY ── */
+function copyUid(btn, uid) {
+  navigator.clipboard.writeText(uid).then(() => {
+    btn.textContent = '✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1200);
+  });
+}
+
+function copyAll() {
+  const lines = results.filter(r => r.uid).map(r => {
+    let s = `${r.input}|${r.uid}`;
+    if (r.status === 'live') s += `|LIVE${r.name ? '|' + r.name : ''}`;
+    else if (r.status === 'die') s += '|DIE';
+    return s;
+  }).join('\n');
+  if (!lines) { alert('Không có UID nào!'); return; }
+  navigator.clipboard.writeText(lines)
+    .then(() => alert(`Đã copy ${results.filter(r => r.uid).length} UID!`));
+}
+
+function clearResults() {
+  results = [];
+  document.getElementById('result-list').innerHTML = '';
+  document.getElementById('res-wrap').classList.remove('show');
+  document.getElementById('prog-wrap').classList.remove('show');
+  updateStats();
+}
+
+/* ── DETAIL PANEL ── */
+async function openDetail(uid, e) {
+  e && e.stopPropagation();
+  document.getElementById('detail-overlay').classList.add('show');
+  document.getElementById('dp-content').innerHTML =
+    '<div class="dp-loading"><div class="spinner-lg"></div>Đang tải thông tin...</div>';
+
+  // tìm cache
+  const cached = results.find(r => r.uid === uid && r.infoCache);
+  const info = cached ? cached.infoCache : await fetchInfo(uid);
+
+  renderDetail(uid, info);
+}
+
+function renderDetail(uid, d) {
+  const name     = d.name || `UID: ${uid}`;
+  const username = d.username || '';
+  const link     = d.link_profile || (username ? `https://facebook.com/${username}` : `https://facebook.com/${uid}`);
+  const avatar   = d.avatar || d.picture || '';
+  const verified = d.tichxanh;
+
+  const gMap = { male: 'Nam', female: 'Nữ', other: 'Khác' };
+  const gender   = gMap[String(d.gender || '').toLowerCase()] || null;
+  let bday       = d.birthday || null;
+  if (['private','none','sinh nhật private'].includes(String(bday).toLowerCase())) bday = null;
+
+  const followers = d.follower;
+  const relation  = d.relationship_status || null;
+  const hometown  = d.hometown || null;
+  const location  = d.location || null;
+  const about     = d.about   || null;
+  const quotes    = d.quotes  || null;
+  const work      = d.work    || null;
+
+  let loveStr = null;
+  if (d.love && typeof d.love === 'object') loveStr = `${d.love.name} (${d.love.id})`;
+  else if (d.love) loveStr = d.love;
+
+  const ic = (label, val, icon, cls='') => {
+    const empty = (val === null || val === undefined || val === '');
+    return `<div class="dp-card">
+      <div class="dp-clabel">${icon} ${label}</div>
+      <div class="dp-cval ${empty ? 'private' : cls}">${empty ? 'Không công khai' : esc(String(val))}</div>
+    </div>`;
+  };
+
+  let grid = '';
+  grid += ic('UID',            uid,       '🆔');
+  grid += ic('Username',       username,  '👤');
+  grid += ic('Giới tính',      gender,    '🚻');
+  grid += ic('Sinh nhật',      bday,      '🎂');
+  grid += ic('Mối quan hệ',    relation,  '💍');
+  grid += ic('Người yêu',      loveStr,   '❤️');
+  grid += ic('Quê quán',       hometown,  '🌍');
+  grid += ic('Nơi ở',          location,  '📍');
+  grid += ic('Người theo dõi', followers ? Number(followers).toLocaleString('vi') : null, '📡', 'blue');
+  if (about)  grid += `<div class="dp-card wide"><div class="dp-clabel">📝 Giới thiệu</div><div class="dp-cval">${esc(about)}</div></div>`;
+  if (quotes) grid += `<div class="dp-card wide"><div class="dp-clabel">💬 Tiểu sử</div><div class="dp-cval">${esc(quotes)}</div></div>`;
+
+  let workHTML = '';
+  if (Array.isArray(work) && work.length) {
+    workHTML = `<div class="dp-card wide" style="margin-top:0"><div class="dp-work-title">💼 Công việc (${work.length})</div>`;
+    work.forEach(w => {
+      const emp   = w.employer?.name || 'N/A';
+      const pos   = w.position?.name || '';
+      const loc   = w.location?.name || '';
+      const start = w.start_date || '';
+      workHTML += `<div class="dp-work-item">
+        <div class="dp-work-emp">${esc(emp)}</div>
+        <div class="dp-work-det">${[pos, loc, start].filter(Boolean).map(esc).join(' · ')}</div>
+      </div>`;
+    });
+    workHTML += '</div>';
+  }
+
+  document.getElementById('dp-content').innerHTML = `
+    <div class="dp-header">
+      <div class="dp-avatar">${avatar ? `<img src="${avatar}" onerror="this.parentElement.innerHTML='👤'">` : '👤'}</div>
+      <div>
+        <div class="dp-name">${esc(name)}</div>
+        <div class="dp-uid">UID: ${uid}${username ? ' · @' + esc(username) : ''}</div>
+        ${verified ? '<span class="dp-verified">✓ TÍCH XANH</span>' : ''}
+      </div>
+    </div>
+    <a class="dp-link" href="${esc(link)}" target="_blank">${esc(link)}</a>
+    <div class="dp-grid">${grid}</div>
+    ${workHTML}
+  `;
+}
+
+function closeDetail(e) {
+  if (e.target === document.getElementById('detail-overlay')) closeDetailBtn();
+}
+function closeDetailBtn() {
+  document.getElementById('detail-overlay').classList.remove('show');
+}
+
+/* ── RIPPLE ── */
+document.getElementById('btn-run').addEventListener('click', function(e) {
+  const r = document.createElement('span');
+  const d = Math.max(this.clientWidth, this.clientHeight);
+  const rect = this.getBoundingClientRect();
+  r.className = 'ripple';
+  r.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX-rect.left-d/2}px;top:${e.clientY-rect.top-d/2}px`;
+  this.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+});
+
+/* ── ESC close ── */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetailBtn(); });
+
+/* ── INIT ── */
+document.getElementById('btn-run').disabled = true;
+// Không auto ping - chờ user nhập URL rồi bấm Kết nối
+</script>
+</body>
+</html>
